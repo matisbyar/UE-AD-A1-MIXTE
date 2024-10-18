@@ -7,17 +7,27 @@ PORT = 3001
 HOST = '0.0.0.0'
 app = Flask(__name__)
 
+# Types déclarés dans le fichier movie.graphql
 type_defs = load_schema_from_path('movie.graphql')
 
+# Création des types
 query = QueryType()
+mutation = MutationType()
 movie = ObjectType('Movie')
 actor = ObjectType('Actor')
-movie.set_field('actors', r.resolve_actors_in_movie)
-query.set_field('movie_with_id', r.movie_with_id)
 
-mutation = MutationType()
+# Movie resolvers
+query.set_field('movie_with_id', r.movie_with_id)
+query.set_field('movie_with_title', r.movie_with_title)
+query.set_field('all_movies', r.all_movies)
+
+# Actor resolvers
+movie.set_field('actors', r.resolve_actors_in_movie)
+
+# Mutation resolvers
 mutation.set_field('update_movie_rate', r.update_movie_rate)
 
+# Schema
 schema = make_executable_schema(type_defs, movie, query, mutation, actor)
 
 
