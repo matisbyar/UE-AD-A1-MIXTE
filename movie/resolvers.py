@@ -25,12 +25,12 @@ def all_movies(_, info):
         return movies['movies']
 
 
-def add_movie(_, info, _id, _title, _rating):
+def add_movie(_, info, _id, _title, _director, _rating):
     newmovies = {}
     newmovie = {}
     with open('{}/data/movies.json'.format("."), "r") as rfile:
         movies = json.load(rfile)
-        newmovie = {"id": _id, "title": _title, "rating": _rating}
+        newmovie = {"id": _id, "title": _title, "rating": _rating, "director": _director}
         movies['movies'].append(newmovie)
         newmovies = movies
     with open('{}/data/movies.json'.format("."), "w") as wfile:
