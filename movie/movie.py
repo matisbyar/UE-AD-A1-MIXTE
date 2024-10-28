@@ -17,16 +17,22 @@ movie = ObjectType('Movie')
 actor = ObjectType('Actor')
 
 # Movie resolvers
-query.set_field('movie_with_id', r.movie_with_id)
-query.set_field('movie_with_title', r.movie_with_title)
-query.set_field('all_movies', r.all_movies)
+query.set_field('movies', r.movies)
+query.set_field('movieWithId', r.movie_with_id)
+query.set_field('movieWithTitle', r.movie_with_title)
 
 # Actor resolvers
+query.set_field('actors', r.actors)
+query.set_field('actorWithId', r.actor_with_id)
+
+# Movie fields resolvers (actors)
 movie.set_field('actors', r.resolve_actors_in_movie)
 
+
 # Mutation resolvers
-mutation.set_field('update_movie_rate', r.update_movie_rate)
-mutation.set_field('add_movie', r.add_movie)
+mutation.set_field('addMovie', r.add_movie)
+mutation.set_field('updateMovieRate', r.update_movie_rate)
+mutation.set_field('deleteMovie', r.delete_movie)
 
 # Schema
 schema = make_executable_schema(type_defs, movie, query, mutation, actor)
