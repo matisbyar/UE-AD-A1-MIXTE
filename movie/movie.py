@@ -20,6 +20,8 @@ actor = ObjectType('Actor')
 query.set_field('movies', r.movies)
 query.set_field('movieWithId', r.movie_with_id)
 query.set_field('movieWithTitle', r.movie_with_title)
+query.set_field('moviesWithDirector', r.movies_with_director)
+query.set_field('moviesWithRating', r.movies_with_rating)
 
 # Actor resolvers
 query.set_field('actors', r.actors)

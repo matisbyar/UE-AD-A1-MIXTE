@@ -3,6 +3,8 @@ type Query {
     movies: [Movie]
     movieWithId(id: String!): Movie
     movieWithTitle(title: String!): Movie
+    moviesWithRating(rating: Float!, rating_type: RatingType!): [Movie]
+    moviesWithDirector(director: String!): [Movie]
 
     # Actor
     actors: [Actor]
@@ -30,4 +32,12 @@ type Actor {
     lastname: String!
     birthyear: Int!
     films: [String!]
+}
+
+enum RatingType {
+    eq
+    gt
+    gte
+    lt
+    lte
 }

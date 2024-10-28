@@ -69,22 +69,28 @@ def delete_movie(_, info, id):
     return movie_to_delete
 
 
-def read_movies_by_director(_, info, director):
-    """Return movies by director"""
+def movies_with_director(_, info, director):
+    """Return movies with director"""
     return [movie for movie in get_movies_file().get('movies', []) if movie['director'] == director]
 
 
-def read_movies_by_rating(_, info, rating, rating_type):
+def movies_with_rating(_, info, rating, rating_type):
     """
-    Return movies by rating with a comparison type (gt: greater than, lt: less than, eq: equal)
+    Return movies by rating with a comparison type (gt(e): greater than, lt(e): less than, eq: equal)
     """
-    movies = get_movies_file().get('movies', [])
+    movies_data = get_movies_file()
+    movies = movies_data.get('movies', [])
     if rating_type == 'gt':
         return [movie for movie in movies if movie['rating'] > rating]
+    elif rating_type == 'gte':
+        return [movie for movie in movies if movie['rating'] >= rating]
     elif rating_type == 'lt':
         return [movie for movie in movies if movie['rating'] < rating]
-    else:
+    elif rating_type == 'lte':
+        return [movie for movie in movies if movie['rating'] <= rating]
+    elif rating_type == 'eq':
         return [movie for movie in movies if movie['rating'] == rating]
+    return []
 
 
 # ACTORS RESOLVERS
