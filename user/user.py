@@ -4,13 +4,15 @@ import json
 import requests
 from flask import Flask, request, jsonify, make_response
 
-# CALLING gRPC requests todo: uncomment these
+# CALLING gRPC requests
 # import grpc
 # from concurrent import futures
 # import booking_pb2
 # import booking_pb2_grpc
 # import movie_pb2
 # import movie_pb2_grpc
+
+# from movie.movie import query
 
 # CALLING GraphQL requests
 # todo to complete
@@ -19,6 +21,7 @@ app = Flask(__name__)
 
 PORT = 3004
 HOST = '0.0.0.0'
+MOVIES_GRAPHQL_ENDPOINT = "http://0.0.0.0:3001/graphql"
 
 with open('{}/data/users.json'.format("."), "r") as jsf:
     users = json.load(jsf)["users"]
@@ -94,28 +97,31 @@ def update_user_lastactive(userId):
 
 @app.route("/user/<userId>/bookings/movies", methods=['GET'])
 def get_movies_from_usersbooking(userId):
-    bookings_url = f"http://{request.remote_addr}:3201/bookings/{userId}"
-    bookings = requests.get(bookings_url)
+    # todo: call booking service to get user bookings
+    # bookings_url = f"http://{request.remote_addr}:3201/bookings/{userId}"
+    # bookings = requests.get(bookings_url)
+    #
+    # if bookings.status_code != 200:
+    #     return make_response(jsonify({"error": "User has no bookings"}), 409)
+    #
+    # bookings_list = bookings.json()
+    # movies = [movie for booking in bookings_list["dates"] for movie in booking["movies"]]
+    #
+    # if not movies:
+    #     return make_response(jsonify({"error": "User has no bookings"}), 409)
 
-    if bookings.status_code != 200:
-        return make_response(jsonify({"error": "User has no bookings"}), 409)
-
-    bookings_list = bookings.json()
-    movies = [movie for booking in bookings_list["dates"] for movie in booking["movies"]]
-
-    if not movies:
-        return make_response(jsonify({"error": "User has no bookings"}), 409)
+    movies = ['276c79ec-a26a-40a6-b3d3-fb242a5947b6', 'OEHFUKE-ZLJEFHK2-92340824',
+              '720d006c-3a57-4b6a-b18f-9b713b073f3c']
 
     movies_detailed = []
     for movie in movies:
-        movie_url = f"http://{request.remote_addr}:3200/movies/{movie}"
-        movie_fetched = requests.get(movie_url)
-
-        if movie_fetched.status_code == 200:
-            print(movie_fetched.json())
-            movies_detailed.append(movie_fetched.json())
-        else:
-            return make_response(jsonify({"error": "An error occurred while fetching a movie"}), 409)
+        try:
+            response = requests.post(MOVIES_GRAPHQL_ENDPOINT, json={
+                "query": "{ movieWithId(id: \"" + movie + "\") { id title director rating actors { id firstname } } }"})
+            response.raise_for_status()
+            movies_detailed.append(response.json()['data']['movieWithId'])
+        except requests.exceptions.RequestException as e:
+            return make_response(jsonify({"error": str(e)}), 409)
 
     return make_response(jsonify({"movies": movies_detailed}), 200)
 
