@@ -112,3 +112,53 @@ def actors(_, info):
 def actor_with_id(_, info, _id):
     """Return actor by ID"""
     return next((actor for actor in get_actors_file().get('actors', []) if actor['id'] == _id), None)
+
+
+def add_actor(_, info, id, firstname, lastname, birthyear, films):
+    actors_data = get_actors_file()
+    if any(actor['id'] == id for actor in actors_data.get('actors', [])):
+        return None
+
+    new_actor = {"id": id, "firstname": firstname, "lastname": lastname, "birthyear": birthyear, "films": films}
+    actors_data['actors'].append(new_actor)
+    save_json_file(ACTORS_FILE, actors_data)
+    return new_actor
+
+
+def update_actor_info(_, info, id, firstname, lastname, birthyear):
+    actors_data = get_actors_file()
+    for actor in actors_data.get('actors', []):
+        if actor['id'] == id:
+            if firstname:
+                actor['firstname'] = firstname
+
+            if lastname:
+                actor['lastname'] = lastname
+
+            if birthyear:
+                actor['birthyear'] = birthyear
+
+            save_json_file(ACTORS_FILE, actors_data)
+            return actor
+    return None
+
+
+def add_movie_to_actor(_, info, actor_id, movie_id):
+    actors_data = get_actors_file()
+    for actor in actors_data.get('actors', []):
+        if actor['id'] == actor_id:
+            actual_list = actor['films']
+            actual_list.append(movie_id)
+
+            save_json_file(ACTORS_FILE, actors_data)
+            return actor
+    return None
+
+
+def delete_actor(_, info, id):
+    actors_data = get_actors_file()
+    actors_to_delete = next((actor for actor in actors_data.get('actors', []) if actor['id'] == id), None)
+    if actors_to_delete:
+        actors_data['movies'].remove(actors_to_delete)
+        save_json_file(ACTORS_FILE, actors_data)
+    return actors_to_delete

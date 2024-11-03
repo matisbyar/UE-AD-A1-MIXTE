@@ -35,6 +35,10 @@ movie.set_field('actors', r.resolve_actors_in_movie)
 mutation.set_field('addMovie', r.add_movie)
 mutation.set_field('updateMovieRate', r.update_movie_rate)
 mutation.set_field('deleteMovie', r.delete_movie)
+mutation.set_field('addActor', r.add_actor)
+mutation.set_field('updateActorInfo', r.update_actor_info)
+mutation.set_field('addMovieToActor', r.add_movie_to_actor)
+mutation.set_field('deleteActor', r.delete_actor)
 
 # Schema
 schema = make_executable_schema(type_defs, movie, query, mutation, actor)

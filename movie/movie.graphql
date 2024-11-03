@@ -16,6 +16,12 @@ type Mutation {
     addMovie(id: String!, title: String!, director: String!, rating: Float!): Movie
     updateMovieRate(id: String!, rate: Float!): Movie
     deleteMovie(id: String!): Movie
+
+    # Actor TODO: Test'em all.
+    addActor(id: String!, firstname: String!, lastname: String!, birthyear: Int!, films: [String]): Actor
+    updateActorInfo(id: String!, firstname: String, lastname: String, birthyear: Int): Actor
+    addMovieToActor(actor_id: String!, movie_id: String!): Actor
+    deleteActor(id: String!): Actor
 }
 
 type Movie {
