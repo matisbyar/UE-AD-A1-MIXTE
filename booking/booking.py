@@ -74,28 +74,12 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                             )
 
     def AddBooking(self, request, context):
-        new_booking = {
-            "userid": request.user,
-            "dates": [
-                {
-                    "date": request.date,
-                    "movies": [
-                        request.movie
-                    ]
-                }
-            ]
-        }
-        self.db.append(new_booking)
-        with open('./data/bookings.json', 'w') as jsf:
-            json.dump({"bookings": self.db}, jsf)
-        return booking_pb2.AddBookingResponse(
-            response=booking_pb2.Response(
-                success=True,
-                message="Booking added successfully"
-            )
-        )
+
+    # todo: call user service to check if user exists
+    # todo: call showtime service to check if showtime exists
 
     def DeleteBooking(self, request, context):
+        # todo: call user service to check if user exists
         for booking in self.db:
             if booking['userid'] == request.user:
                 for dateEntry in booking['dates']:
