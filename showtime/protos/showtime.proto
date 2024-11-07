@@ -16,7 +16,6 @@ message ShowtimeData {
 
 message MovieData {
   string movie = 1;
-  int32 seats = 2;
 }
 
 message Empty {}

@@ -9,7 +9,6 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC,
     5,
@@ -23,7 +22,7 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x0eshowtime.proto\"\x1c\n\x0cShowtimeDate\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\"8\n\x0cShowtimeData\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x1a\n\x06movies\x18\x02 \x03(\x0b\x32\n.MovieData\")\n\tMovieData\x12\r\n\x05movie\x18\x01 \x01(\t\x12\r\n\x05seats\x18\x02 \x01(\x05\"\x07\n\x05\x45mpty2g\n\x05Times\x12\x33\n\x11GetShowtimeByDate\x12\r.ShowtimeDate\x1a\r.ShowtimeData\"\x00\x12)\n\x0cGetShowtimes\x12\x06.Empty\x1a\r.ShowtimeData\"\x00\x30\x01\x62\x06proto3')
+    b'\n\x0eshowtime.proto\"\x1c\n\x0cShowtimeDate\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\"8\n\x0cShowtimeData\x12\x0c\n\x04\x64\x61te\x18\x01 \x01(\t\x12\x1a\n\x06movies\x18\x02 \x03(\x0b\x32\n.MovieData\"\x1a\n\tMovieData\x12\r\n\x05movie\x18\x01 \x01(\t\"\x07\n\x05\x45mpty2g\n\x05Times\x12\x33\n\x11GetShowtimeByDate\x12\r.ShowtimeDate\x1a\r.ShowtimeData\"\x00\x12)\n\x0cGetShowtimes\x12\x06.Empty\x1a\r.ShowtimeData\"\x00\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,9 +34,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals['_SHOWTIMEDATA']._serialized_start = 48
     _globals['_SHOWTIMEDATA']._serialized_end = 104
     _globals['_MOVIEDATA']._serialized_start = 106
-    _globals['_MOVIEDATA']._serialized_end = 147
-    _globals['_EMPTY']._serialized_start = 149
-    _globals['_EMPTY']._serialized_end = 156
-    _globals['_TIMES']._serialized_start = 158
-    _globals['_TIMES']._serialized_end = 261
+    _globals['_MOVIEDATA']._serialized_end = 132
+    _globals['_EMPTY']._serialized_start = 134
+    _globals['_EMPTY']._serialized_end = 141
+    _globals['_TIMES']._serialized_start = 143
+    _globals['_TIMES']._serialized_end = 246
 # @@protoc_insertion_point(module_scope)
