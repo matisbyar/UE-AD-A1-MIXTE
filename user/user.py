@@ -1,21 +1,13 @@
 # REST API
 import json
 
+# CALLING gRPC requests
+import grpc
 import requests
 from flask import Flask, request, jsonify, make_response
 
-# CALLING gRPC requests
-# import grpc
-# from concurrent import futures
-# import booking_pb2
-# import booking_pb2_grpc
-# import movie_pb2
-# import movie_pb2_grpc
-
-# from movie.movie import query
-
-# CALLING GraphQL requests
-# todo to complete
+import booking_pb2
+import booking_pb2_grpc
 
 app = Flask(__name__)
 
@@ -97,33 +89,27 @@ def update_user_lastactive(userId):
 
 @app.route("/user/<userId>/bookings/movies", methods=['GET'])
 def get_movies_from_usersbooking(userId):
-    # todo: call booking service to get user bookings
-    # bookings_url = f"http://{request.remote_addr}:3201/bookings/{userId}"
-    # bookings = requests.get(bookings_url)
-    #
-    # if bookings.status_code != 200:
-    #     return make_response(jsonify({"error": "User has no bookings"}), 409)
-    #
-    # bookings_list = bookings.json()
-    # movies = [movie for booking in bookings_list["dates"] for movie in booking["movies"]]
-    #
-    # if not movies:
-    #     return make_response(jsonify({"error": "User has no bookings"}), 409)
+    with grpc.insecure_channel('localhost:3002') as channel:
+        stub = booking_pb2_grpc.BookingStub(channel)
+        response = stub.GetUsersBookings(booking_pb2.UserId(id=userId))
 
-    movies = ['276c79ec-a26a-40a6-b3d3-fb242a5947b6', 'OEHFUKE-ZLJEFHK2-92340824',
-              '720d006c-3a57-4b6a-b18f-9b713b073f3c']
+        movies = [movie.id for date in response.dates for movie in date.movies]
 
-    movies_detailed = []
-    for movie in movies:
-        try:
-            response = requests.post(MOVIES_GRAPHQL_ENDPOINT, json={
-                "query": "{ movieWithId(id: \"" + movie + "\") { id title director rating actors { id firstname } } }"})
-            response.raise_for_status()
-            movies_detailed.append(response.json()['data']['movieWithId'])
-        except requests.exceptions.RequestException as e:
-            return make_response(jsonify({"error": str(e)}), 409)
+        if not movies:
+            return make_response(jsonify({"error": "User has no bookings"}), 409)
 
-    return make_response(jsonify({"movies": movies_detailed}), 200)
+        movies_detailed = []
+        for movie in movies:
+            try:
+                response = requests.post(MOVIES_GRAPHQL_ENDPOINT, json={
+                    "query": "{ movieWithId(id: \"" + movie + "\") { id title director rating actors { id firstname } } }"})
+                response.raise_for_status()
+                movies_detailed.append(response.json()['data']['movieWithId'])
+            except requests.exceptions.RequestException as e:
+                return make_response(jsonify({"error": str(e)}), 409)
+
+        channel.close()
+        return make_response(jsonify({"movies": movies_detailed}), 200)
 
 
 @app.route("/help", methods=['GET'])

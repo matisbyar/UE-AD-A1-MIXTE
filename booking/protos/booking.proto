@@ -13,16 +13,16 @@ message BookingData {
   repeated DateData dates = 2;
 }
 
-message MovieData {
-  string movieId = 1;
-}
-
 message DateData {
   string date = 1;
-  repeated MovieData moviesData = 2;
+  repeated MovieId movies = 2;
 }
 
 message UserId {
+  string id = 1;
+}
+
+message MovieId {
   string id = 1;
 }
 

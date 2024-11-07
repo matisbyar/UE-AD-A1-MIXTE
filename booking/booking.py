@@ -43,9 +43,9 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
             dates_list = [
                 booking_pb2.DateData(
                     date=date_entry['date'],
-                    moviesData=[
-                        booking_pb2.MovieData(
-                            movieId=movie_entry
+                    movies=[
+                        booking_pb2.MovieId(
+                            id=movie_entry
                         ) for movie_entry in date_entry['movies']
                     ]
                 ) for date_entry in booking['dates']
@@ -64,9 +64,9 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                 dates_list = [
                     booking_pb2.DateData(
                         date=date_entry['date'],
-                        moviesData=[
-                            booking_pb2.MovieData(
-                                movieId=movie_entry
+                        movies=[
+                            booking_pb2.MovieId(
+                                id=movie_entry
                             ) for movie_entry in date_entry['movies']
                         ]
                     ) for date_entry in booking['dates']
@@ -92,9 +92,9 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
                             dates_list = [
                                 booking_pb2.DateData(
                                     date=date_entry['date'],
-                                    moviesData=[
-                                        booking_pb2.MovieData(
-                                            movieId=movie_entry
+                                    movies=[
+                                        booking_pb2.MovieId(
+                                            id=movie_entry
                                         ) for movie_entry in date_entry['movies']
                                     ]
                                 ) for date_entry in booking['dates']
