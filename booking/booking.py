@@ -7,6 +7,20 @@ import booking_pb2
 import booking_pb2_grpc
 
 
+def grpc_channel(target):
+    """
+    Create a gRPC channel
+    This helps to close the channel after use
+    :param target: target address
+    :return: gRPC channel
+    """
+    channel = grpc.insecure_channel(target)
+    try:
+        yield channel
+    finally:
+        channel.close()
+
+
 class BookingServicer(booking_pb2_grpc.BookingServicer):
 
     def __init__(self):
@@ -18,8 +32,8 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         Get the showtimes stub
         :return: showtimes stub
         """
-        channel = grpc.insecure_channel('localhost:3002')
-        return booking_pb2_grpc.TimesStub(channel)
+        with grpc_channel('localhost:3002') as channel:
+            return booking_pb2_grpc.TimesStub(channel)
 
     def GetAllBookings(self, request, context):
         """
@@ -94,49 +108,51 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Add booking
         """
-        times = self.get_showtimes_stub().GetShowtimes(booking_pb2.Empty())
+        with grpc_channel('localhost:3002') as channel:
+            times_stub = booking_pb2_grpc.TimesStub(channel)
+            times = times_stub.GetShowtimes(booking_pb2.Empty())
 
-        for time in times:
-            if time.date == request.date and request.movie in time.movie:
-                for booking in self.db:
-                    if booking['userid'] == request.user:
-                        for date_entry in booking['dates']:
-                            if date_entry['date'] == request.date:
-                                date_entry['movies'].append(request.movie)
-                                self._save_db()
-                                return booking_pb2.AddBookingResponse(
-                                    response=booking_pb2.Response(
-                                        success=True,
-                                        message="Booking added successfully"
+            for time in times:
+                if time.date == request.date and request.movie in time.movie:
+                    for booking in self.db:
+                        if booking['userid'] == request.user:
+                            for date_entry in booking['dates']:
+                                if date_entry['date'] == request.date:
+                                    date_entry['movies'].append(request.movie)
+                                    self._save_db()
+                                    return booking_pb2.AddBookingResponse(
+                                        response=booking_pb2.Response(
+                                            success=True,
+                                            message="Booking added successfully"
+                                        )
                                     )
+                            booking['dates'].append({
+                                "date": request.date,
+                                "movies": [request.movie]
+                            })
+                            self._save_db()
+                            return booking_pb2.AddBookingResponse(
+                                response=booking_pb2.Response(
+                                    success=True,
+                                    message="Booking added successfully"
                                 )
-                        booking['dates'].append({
-                            "date": request.date,
-                            "movies": [request.movie]
-                        })
-                        self._save_db()
-                        return booking_pb2.AddBookingResponse(
-                            response=booking_pb2.Response(
-                                success=True,
-                                message="Booking added successfully"
                             )
+                    self.db.append({
+                        "userid": request.user,
+                        "dates": [
+                            {
+                                "date": request.date,
+                                "movies": [request.movie]
+                            }
+                        ]
+                    })
+                    self._save_db()
+                    return booking_pb2.AddBookingResponse(
+                        response=booking_pb2.Response(
+                            success=True,
+                            message="Booking added successfully"
                         )
-                self.db.append({
-                    "userid": request.user,
-                    "dates": [
-                        {
-                            "date": request.date,
-                            "movies": [request.movie]
-                        }
-                    ]
-                })
-                self._save_db()
-                return booking_pb2.AddBookingResponse(
-                    response=booking_pb2.Response(
-                        success=True,
-                        message="Booking added successfully"
                     )
-                )
 
     def DeleteBooking(self, request, context):
         """
