@@ -2,23 +2,12 @@ import json
 from concurrent import futures
 
 import grpc
+import requests
 
 import booking_pb2
 import booking_pb2_grpc
-
-
-def grpc_channel(target):
-    """
-    Create a gRPC channel
-    This helps to close the channel after use
-    :param target: target address
-    :return: gRPC channel
-    """
-    channel = grpc.insecure_channel(target)
-    try:
-        yield channel
-    finally:
-        channel.close()
+import showtime_pb2
+import showtime_pb2_grpc
 
 
 class BookingServicer(booking_pb2_grpc.BookingServicer):
@@ -32,7 +21,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         Get the showtimes stub
         :return: showtimes stub
         """
-        with grpc_channel('localhost:3002') as channel:
+        with grpc.insecure_channel('localhost:3002') as channel:
             return booking_pb2_grpc.TimesStub(channel)
 
     def GetAllBookings(self, request, context):
@@ -108,51 +97,74 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Add booking
         """
-        with grpc_channel('localhost:3002') as channel:
-            times_stub = booking_pb2_grpc.TimesStub(channel)
-            times = times_stub.GetShowtimes(booking_pb2.Empty())
+        # Check if the user exists
+        user_response = requests.get(f'http://localhost:3004/user/{request.user}')
+        if user_response.status_code != 200:
+            return booking_pb2.AddBookingResponse(
+                response=booking_pb2.Response(
+                    success=False,
+                    message="User does not exist"
+                )
+            )
 
-            for time in times:
-                if time.date == request.date and request.movie in time.movie:
-                    for booking in self.db:
-                        if booking['userid'] == request.user:
-                            for date_entry in booking['dates']:
-                                if date_entry['date'] == request.date:
-                                    date_entry['movies'].append(request.movie)
-                                    self._save_db()
-                                    return booking_pb2.AddBookingResponse(
-                                        response=booking_pb2.Response(
-                                            success=True,
-                                            message="Booking added successfully"
-                                        )
-                                    )
-                            booking['dates'].append({
-                                "date": request.date,
-                                "movies": [request.movie]
-                            })
-                            self._save_db()
-                            return booking_pb2.AddBookingResponse(
-                                response=booking_pb2.Response(
-                                    success=True,
-                                    message="Booking added successfully"
-                                )
+        with grpc.insecure_channel('localhost:3003') as channel:
+            times_stub = showtime_pb2_grpc.TimesStub(channel)
+            times = times_stub.GetShowtimes(showtime_pb2.EmptyTimes())
+
+            for schedule in times:
+                if schedule.date == request.date:
+                    if request.movie not in [movie.movie for movie in schedule.movies]:
+                        return booking_pb2.AddBookingResponse(
+                            response=booking_pb2.Response(
+                                success=False,
+                                message="No showtime for this movie on the given date"
                             )
-                    self.db.append({
-                        "userid": request.user,
-                        "dates": [
-                            {
-                                "date": request.date,
-                                "movies": [request.movie]
-                            }
-                        ]
-                    })
-                    self._save_db()
-                    return booking_pb2.AddBookingResponse(
-                        response=booking_pb2.Response(
-                            success=True,
-                            message="Booking added successfully"
                         )
+                    break
+            else:
+                return booking_pb2.AddBookingResponse(
+                    response=booking_pb2.Response(
+                        success=False,
+                        message="No showtime for this date"
                     )
+                )
+
+        # Check if the user has already booked this movie on the given date
+        user_entry = next((entry for entry in self.db if entry["userid"] == request.user), None)
+        if user_entry:
+            date_entry = next((entry for entry in user_entry["dates"] if entry["date"] == request.date), None)
+            if date_entry and request.movie in date_entry["movies"]:
+                return booking_pb2.AddBookingResponse(
+                    response=booking_pb2.Response(
+                        success=False,
+                        message="User has already booked this movie on the given date"
+                    )
+                )
+
+        # Add the booking
+        if user_entry is None:
+            self.db.append({
+                "userid": request.user,
+                "dates": [
+                    {
+                        "date": request.date,
+                        "movies": [request.movie]
+                    }
+                ]
+            })
+        else:
+            if date_entry is None:
+                user_entry["dates"].append({"date": request.date, "movies": [request.movie]})
+            else:
+                date_entry["movies"].append(request.movie)
+
+        self._save_db()
+        return booking_pb2.AddBookingResponse(
+            response=booking_pb2.Response(
+                success=True,
+                message="Booking added successfully"
+            )
+        )
 
     def DeleteBooking(self, request, context):
         """
@@ -190,6 +202,7 @@ def serve():
     booking_pb2_grpc.add_BookingServicer_to_server(BookingServicer(), server)
     server.add_insecure_port('[::]:3002')
     server.start()
+    print("Booking service started on port 3002.")
     server.wait_for_termination()
 
 

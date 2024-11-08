@@ -112,6 +112,27 @@ def get_movies_from_usersbooking(userId):
         return make_response(jsonify({"movies": movies_detailed}), 200)
 
 
+@app.route("/user/<userId>/book", methods=['POST'])
+def add_booking_byuser(userId):
+    """
+    Only use Booking service to add a booking
+    :param userId:
+    :return:
+    """
+    with grpc.insecure_channel('localhost:3002') as channel:
+        stub = booking_pb2_grpc.BookingStub(channel)
+        response = stub.AddBooking(booking_pb2.AddBookingData(
+            user=userId,
+            date=request.json['date'],
+            movie=request.json['movie']
+        ))
+
+        channel.close()
+        if response.response.success:
+            return make_response(jsonify({"message": response.response.message}), 200)
+        else:
+            return make_response(jsonify({"error": response.response.message}), 400)
+
 @app.route("/help", methods=['GET'])
 def get_help_users():
     help = [

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 service Times {
   rpc GetShowtimeByDate(ShowtimeDate) returns (ShowtimeData) {}
-  rpc GetShowtimes(Empty) returns (stream ShowtimeData) {}
+  rpc GetShowtimes(EmptyTimes) returns (stream ShowtimeData) {}
 }
 
 message ShowtimeDate {
@@ -18,4 +18,4 @@ message MovieData {
   string movie = 1;
 }
 
-message Empty {}
+message EmptyTimes {}

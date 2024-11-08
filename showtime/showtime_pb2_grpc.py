@@ -40,7 +40,7 @@ class TimesStub(object):
             _registered_method=True)
         self.GetShowtimes = channel.unary_stream(
             '/Times/GetShowtimes',
-            request_serializer=showtime__pb2.Empty.SerializeToString,
+            request_serializer=showtime__pb2.EmptyTimes.SerializeToString,
             response_deserializer=showtime__pb2.ShowtimeData.FromString,
             _registered_method=True)
 
@@ -70,7 +70,7 @@ def add_TimesServicer_to_server(servicer, server):
         ),
         'GetShowtimes': grpc.unary_stream_rpc_method_handler(
             servicer.GetShowtimes,
-            request_deserializer=showtime__pb2.Empty.FromString,
+            request_deserializer=showtime__pb2.EmptyTimes.FromString,
             response_serializer=showtime__pb2.ShowtimeData.SerializeToString,
         ),
     }
@@ -126,7 +126,7 @@ class Times(object):
             request,
             target,
             '/Times/GetShowtimes',
-            showtime__pb2.Empty.SerializeToString,
+            showtime__pb2.EmptyTimes.SerializeToString,
             showtime__pb2.ShowtimeData.FromString,
             options,
             channel_credentials,

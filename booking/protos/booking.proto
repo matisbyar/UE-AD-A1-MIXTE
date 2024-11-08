@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 service Booking {
-  rpc GetAllBookings(Empty) returns (stream BookingData);
+  rpc GetAllBookings(EmptyBooking) returns (stream BookingData);
   rpc GetUsersBookings(UserId) returns (BookingData);
   rpc GetShowtimesBookings(Showtime) returns (stream BookingData);
   rpc AddBooking(AddBookingData) returns (AddBookingResponse);
@@ -56,4 +56,4 @@ message Response {
   string message = 2;
 }
 
-message Empty {}
+message EmptyBooking {}

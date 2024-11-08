@@ -35,7 +35,7 @@ class BookingStub(object):
         """
         self.GetAllBookings = channel.unary_stream(
             '/Booking/GetAllBookings',
-            request_serializer=booking__pb2.Empty.SerializeToString,
+            request_serializer=booking__pb2.EmptyBooking.SerializeToString,
             response_deserializer=booking__pb2.BookingData.FromString,
             _registered_method=True)
         self.GetUsersBookings = channel.unary_unary(
@@ -98,7 +98,7 @@ def add_BookingServicer_to_server(servicer, server):
     rpc_method_handlers = {
         'GetAllBookings': grpc.unary_stream_rpc_method_handler(
             servicer.GetAllBookings,
-            request_deserializer=booking__pb2.Empty.FromString,
+            request_deserializer=booking__pb2.EmptyBooking.FromString,
             response_serializer=booking__pb2.BookingData.SerializeToString,
         ),
         'GetUsersBookings': grpc.unary_unary_rpc_method_handler(
@@ -147,7 +147,7 @@ class Booking(object):
             request,
             target,
             '/Booking/GetAllBookings',
-            booking__pb2.Empty.SerializeToString,
+            booking__pb2.EmptyBooking.SerializeToString,
             booking__pb2.BookingData.FromString,
             options,
             channel_credentials,
