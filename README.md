@@ -25,6 +25,7 @@ De prime abord, il faut installer les dépendances de chaque service. Pour cela,
 dans chaque dossier :
 
 ```bash
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
