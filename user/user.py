@@ -32,12 +32,21 @@ def home():
 
 @app.route("/users", methods=['GET'])
 def get_json():
+    """
+    Get all users
+    :return: JSON response
+    """
     res = make_response(jsonify(users), 200)
     return res
 
 
 @app.route("/user/<userId>", methods=['GET'])
 def get_user_by_id(userId):
+    """
+    Get user by ID
+    :param userId: the user ID to search for
+    :return: JSON response
+    """
     for user in users:
         if str(user["id"]) == str(userId):
             res = make_response(jsonify(user), 200)
@@ -47,6 +56,11 @@ def get_user_by_id(userId):
 
 @app.route("/users/<userId>", methods=['POST'])
 def add_user(userId):
+    """
+    Add a user
+    :param userId: the user ID to add
+    :return: JSON response
+    """
     req = request.get_json()
 
     for user in users:
@@ -61,6 +75,11 @@ def add_user(userId):
 
 @app.route("/user/<userId>", methods=['DELETE'])
 def del_user(userId):
+    """
+    Delete a user
+    :param userId: the user ID to delete
+    :return: JSON response
+    """
     for user in users:
         if str(user["id"]) == str(userId):
             users.remove(user)
@@ -73,6 +92,11 @@ def del_user(userId):
 
 @app.route("/user/<userId>", methods=['PUT'])
 def update_user_lastactive(userId):
+    """
+
+    :param userId: the user ID to update
+    :return: JSON response
+    """
     last_active = request.args.get('last_active')
 
     for user in users:
@@ -89,6 +113,11 @@ def update_user_lastactive(userId):
 
 @app.route("/user/<userId>/bookings/movies", methods=['GET'])
 def get_movies_from_usersbooking(userId):
+    """
+    Get all user's bookings by their ID
+    :param userId: the user ID to search for
+    :return: JSON response
+    """
     with grpc.insecure_channel('localhost:3002') as channel:
         stub = booking_pb2_grpc.BookingStub(channel)
         response = stub.GetUsersBookings(booking_pb2.UserId(id=userId))
@@ -116,8 +145,8 @@ def get_movies_from_usersbooking(userId):
 def add_booking_byuser(userId):
     """
     Only use Booking service to add a booking
-    :param userId:
-    :return:
+    :param userId: the user ID to add a booking
+    :return: JSON response
     """
     with grpc.insecure_channel('localhost:3002') as channel:
         stub = booking_pb2_grpc.BookingStub(channel)
@@ -135,6 +164,10 @@ def add_booking_byuser(userId):
 
 @app.route("/help", methods=['GET'])
 def get_help_users():
+    """
+    Get help
+    :return: JSON response
+    """
     help = [
         {"path_and_method": "GET /users", "description": "Get all users"},
         {"path_and_method": "GET /user/<userId>", "description": "Get user by ID"},

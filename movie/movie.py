@@ -65,5 +65,10 @@ def graphql_server():
 
 
 if __name__ == "__main__":
+    """
+    Starts the GraphQL server to serve Movie.
+
+    The server listens on port 3001.
+    """
     print("Server running in port %s" % (PORT))
     app.run(host=HOST, port=PORT)
