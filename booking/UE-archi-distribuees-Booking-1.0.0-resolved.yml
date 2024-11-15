@@ -1,0 +1,21 @@
+openapi: '3.0.3'
+info:
+  title: Booking API
+  description: This is the API of the Booking Service
+  license:
+    name : GPL v3
+    url : https://www.gnu.org/licenses/gpl-3.0.en.html
+  version: '1.0'
+tags:
+-  name: admins
+   description: Secured Admin-only calls
+-  name: developers
+   description: Operations available to regular developers
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /test:
+    get:
+      responses:
+        '200':
+          description: OK
