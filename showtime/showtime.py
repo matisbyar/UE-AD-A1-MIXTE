@@ -14,6 +14,9 @@ class ShowtimeServicer(showtime_pb2_grpc.TimesServicer):
             self.db = json.load(jsf)["schedule"]
 
     def GetShowtimes(self, request, context):
+        """
+        Initializes the ShowtimeServicer by loading the showtime schedule from a JSON file.
+        """
         for schedule in self.db:
             yield showtime_pb2.ShowtimeData(
                 date=schedule['date'],
@@ -24,6 +27,13 @@ class ShowtimeServicer(showtime_pb2_grpc.TimesServicer):
             )
 
     def GetShowtimeByDate(self, request, context):
+        """
+        Retrieves showtime data for a specific date.
+
+        :param request: The request containing the date to search for.
+
+        :returns ShowtimeData: The showtime data for the specified date, or an empty ShowtimeData if not found.
+        """
         for schedule in self.db:
             if schedule['date'] == request.date:
                 return showtime_pb2.ShowtimeData(
@@ -37,6 +47,11 @@ class ShowtimeServicer(showtime_pb2_grpc.TimesServicer):
 
 
 def serve():
+    """
+    Starts the gRPC server to serve ShowtimeServicer.
+
+    The server listens on port 3003.
+    """
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     showtime_pb2_grpc.add_TimesServicer_to_server(ShowtimeServicer(), server)
     server.add_insecure_port('[::]:3003')
