@@ -162,22 +162,24 @@ def add_booking_byuser(userId):
         else:
             return make_response(jsonify({"error": response.response.message}), 400)
 
+
 @app.route("/help", methods=['GET'])
 def get_help_users():
     """
     Get help
     :return: JSON response
     """
-    help = [
+    help_info = [
         {"path_and_method": "GET /users", "description": "Get all users"},
         {"path_and_method": "GET /user/<userId>", "description": "Get user by ID"},
         {"path_and_method": "GET /user/<userId>/bookings/movies",
          "description": "Retrieve all user's bookings by their ID"},
         {"path_and_method": "PUT /user/<userId>", "description": "Update user last_active timestamp by their ID"},
         {"path_and_method": "DELETE /user/<userId>", "description": "Delete user by ID"},
+        {"path_and_method": "POST /user/<userId>/book", "description": "Add booking by user ID"},
         {"path_and_method": "GET /help", "description": "Get help"}
     ]
-    return make_response(jsonify(help), 200)
+    return make_response(jsonify(help_info), 200)
 
 
 if __name__ == "__main__":
