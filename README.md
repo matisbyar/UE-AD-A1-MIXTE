@@ -55,7 +55,7 @@ python user.py
 
 Tous les services ont une documentation disponibles dans les répertoires associés :
 
-- [Booking](booking/UE-archi-distribuees-Booking-1.0.0-resolved.yaml)
+- [Booking](booking/README.md)
 - [Movie](movie/README.md)
 - [Showtime](showtime/README.md)
-- [User](user/README.md)
+- [User](user/UE-archi-distribuees-User-1.0.0-resolved.yml)
