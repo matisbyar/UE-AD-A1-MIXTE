@@ -10,12 +10,16 @@ import showtime_pb2_grpc
 class ShowtimeServicer(showtime_pb2_grpc.TimesServicer):
 
     def __init__(self):
+        """
+        Initializes the ShowtimeServicer by loading the showtime schedule from a JSON file.
+        """
         with open('{}/data/times.json'.format("."), "r") as jsf:
             self.db = json.load(jsf)["schedule"]
 
     def GetShowtimes(self, request, context):
         """
-        Initializes the ShowtimeServicer by loading the showtime schedule from a JSON file.
+        Retrieves all showtime data.
+        :return: all showtime data.
         """
         for schedule in self.db:
             yield showtime_pb2.ShowtimeData(
