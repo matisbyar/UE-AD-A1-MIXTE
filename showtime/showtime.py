@@ -16,11 +16,19 @@ class ShowtimeServicer(showtime_pb2_grpc.TimesServicer):
         with open('{}/data/times.json'.format("."), "r") as jsf:
             self.db = json.load(jsf)["schedule"]
 
+    def refresh_db(self):
+        """
+        Refreshes the showtime schedule data by loading it from the JSON file.
+        """
+        with open('{}/data/times.json'.format("."), "r") as jsf:
+            self.db = json.load(jsf)["schedule"]
+
     def GetShowtimes(self, request, context):
         """
         Retrieves all showtime data.
         :return: all showtime data.
         """
+        self.refresh_db()
         for schedule in self.db:
             yield showtime_pb2.ShowtimeData(
                 date=schedule['date'],
@@ -38,6 +46,7 @@ class ShowtimeServicer(showtime_pb2_grpc.TimesServicer):
 
         :returns ShowtimeData: The showtime data for the specified date, or an empty ShowtimeData if not found.
         """
+        self.refresh_db()
         for schedule in self.db:
             if schedule['date'] == request.date:
                 return showtime_pb2.ShowtimeData(

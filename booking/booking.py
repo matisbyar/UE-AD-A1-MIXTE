@@ -16,6 +16,10 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         with open('./data/bookings.json', 'r') as jsf:
             self.db = json.load(jsf)['bookings']
 
+    def refresh_db(self):
+        with open('./data/bookings.json', 'r') as jsf:
+            self.db = json.load(jsf)['bookings']
+
     def get_showtimes_stub(self):
         """
         Get the showtimes stub
@@ -28,6 +32,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Get all bookings
         """
+        self.refresh_db()
         for booking in self.db:
             dates_list = [
                 booking_pb2.DateData(
@@ -48,6 +53,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Get bookings by user
         """
+        self.refresh_db()
         for booking in self.db:
             if booking['userid'] == request.id:
                 dates_list = [
@@ -73,6 +79,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Get bookings by showtimes of users from one movie and one date
         """
+        self.refresh_db()
         for booking in self.db:
             for date_entry in booking['dates']:
                 if date_entry['date'] == request.date:
@@ -97,6 +104,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Add booking
         """
+        self.refresh_db()
         # Check if the user exists
         user_response = requests.get(f'http://localhost:3004/user/{request.user}')
         if user_response.status_code != 200:
@@ -170,6 +178,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
         """
         Delete booking
         """
+        self.refresh_db()
         for booking in self.db:
             if booking['userid'] == request.user:
                 for date_entry in booking['dates']:
