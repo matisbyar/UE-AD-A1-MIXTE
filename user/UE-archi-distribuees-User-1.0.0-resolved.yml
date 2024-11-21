@@ -1,0 +1,324 @@
+openapi: 3.0.3
+info:
+  title: User API
+  version: '1.0'
+  description: This is the API of the User service
+  contact:
+    email: helene.coullon@imt-atlantique.fr
+  license:
+    name: GPL v3
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+tags:
+  - name: developers
+    description: Operations available to regular developers
+paths:
+  /:
+    get:
+      tags:
+        - developers
+      summary: Home page of the service
+      operationId: home
+      responses:
+        "200":
+          description: Welcome message
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Welcome to the User service!
+  /users:
+    get:
+      tags:
+        - developers
+      summary: Get all users
+      operationId: get_json
+      responses:
+        "200":
+          description: Full JSON
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllUser'
+  /user/{userId}:
+    get:
+      tags:
+        - developers
+      summary: Get user by ID
+      operationId: get_user_by_id
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: No user with this ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No user with this ID
+    delete:
+      tags:
+        - developers
+      summary: Delete a user by ID
+      operationId: del_user
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+    put:
+      tags:
+        - developers
+      summary: Update user last_active timestamp by ID
+      operationId: update_user_lastactive
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier.
+          required: true
+          schema:
+            type: string
+        - name: last_active
+          in: query
+          description: Last active timestamp.
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "201":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+  /users/{userId}:
+    post:
+      tags:
+        - developers
+      summary: Add a new user
+      operationId: add_user
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: User object that needs to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: User added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User added
+        "409":
+          description: User ID already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User ID already exists
+  /user/{userId}/bookings/movies:
+    get:
+      tags:
+        - developers
+      summary: Retrieve all user's bookings by their ID
+      operationId: get_movies_from_usersbooking
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Movies from user's bookings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        director:
+                          type: string
+                        rating:
+                          type: number
+                        actors:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              firstname:
+                                type: string
+        "409":
+          description: User has no bookings or an error occurred while fetching a movie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User has no bookings
+  /user/{userId}/book:
+    post:
+      tags:
+        - developers
+      summary: Add booking by user ID
+      operationId: add_booking_byuser
+      parameters:
+        - name: userId
+          in: path
+          description: Identifier.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Booking data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  example: "2024-11-25"
+                movie:
+                  type: string
+                  example: "267eedb8-0f5d-42d5-8f43-72426b9fb3e6"
+      responses:
+        "200":
+          description: Booking added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Booking added
+        "400":
+          description: Error adding booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Error adding booking
+  /help:
+    get:
+      tags:
+        - developers
+      summary: Get help
+      operationId: get_help_users
+      responses:
+        "200":
+          description: Help information
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path_and_method:
+                      type: string
+                    description:
+                      type: string
+components:
+  schemas:
+    AllUser:
+      required:
+        - users
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    User:
+      required:
+        - id
+        - name
+        - last_active
+      type: object
+      properties:
+        id:
+          type: string
+          example: "john_appleseed"
+        name:
+          type: string
+          example: "John Appleseed"
+        last_active:
+          type: integer
+          example: 1360031010

@@ -109,9 +109,9 @@ def actors(_, info):
     return get_actors_file().get('actors', [])
 
 
-def actor_with_id(_, info, _id):
+def actor_with_id(_, info, id):
     """Return actor by ID"""
-    return next((actor for actor in get_actors_file().get('actors', []) if actor['id'] == _id), None)
+    return next((actor for actor in get_actors_file().get('actors', []) if actor['id'] == id), None)
 
 
 def add_actor(_, info, id, firstname, lastname, birthyear, films):
