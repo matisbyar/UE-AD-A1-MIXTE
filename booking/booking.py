@@ -71,7 +71,7 @@ class BookingServicer(booking_pb2_grpc.BookingServicer):
 
     def GetShowtimesBookings(self, request, context):
         """
-        Get bookings by showtimes
+        Get bookings by showtimes of users from one movie and one date
         """
         for booking in self.db:
             for date_entry in booking['dates']:
