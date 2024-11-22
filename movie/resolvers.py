@@ -159,6 +159,6 @@ def delete_actor(_, info, id):
     actors_data = get_actors_file()
     actors_to_delete = next((actor for actor in actors_data.get('actors', []) if actor['id'] == id), None)
     if actors_to_delete:
-        actors_data['movies'].remove(actors_to_delete)
+        actors_data["actors"].remove(actors_to_delete)
         save_json_file(ACTORS_FILE, actors_data)
     return actors_to_delete
