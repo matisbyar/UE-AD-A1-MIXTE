@@ -21,7 +21,7 @@ with open('{}/data/users.json'.format("."), "r") as jsf:
 
 def write(bookings):
     data = {"users": bookings}
-    with open('{}/databases/users.json'.format("."), 'w') as f:
+    with open('{}/data/users.json'.format("."), 'w') as f:
         json.dump(data, f)
 
 
