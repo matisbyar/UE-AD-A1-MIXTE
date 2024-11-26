@@ -9,6 +9,8 @@ info:
     name: GPL v3
     url: https://www.gnu.org/licenses/gpl-3.0.en.html
 tags:
+  - name : admin
+    description: Operations available to admin only
   - name: developers
     description: Operations available to regular developers
 paths:
@@ -71,7 +73,7 @@ paths:
                     example: No user with this ID
     delete:
       tags:
-        - developers
+        - admin
       summary: Delete a user by ID
       operationId: del_user
       parameters:
@@ -100,7 +102,7 @@ paths:
                     example: User not found
     put:
       tags:
-        - developers
+        - admin
       summary: Update user last_active timestamp by ID
       operationId: update_user_lastactive
       parameters:
@@ -136,7 +138,7 @@ paths:
   /users/{userId}:
     post:
       tags:
-        - developers
+        - admin
       summary: Add a new user
       operationId: add_user
       parameters:
@@ -230,7 +232,7 @@ paths:
   /user/{userId}/book:
     post:
       tags:
-        - developers
+        - admin
       summary: Add booking by user ID
       operationId: add_booking_byuser
       parameters:
